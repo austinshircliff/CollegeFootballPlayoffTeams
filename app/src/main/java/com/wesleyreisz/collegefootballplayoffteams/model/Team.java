@@ -1,4 +1,4 @@
-package com.wesleyreisz.collegefootballplayoffteams;
+package com.wesleyreisz.collegefootballplayoffteams.model;
 
 /**
  * Created by wesleyreisz on 11/27/16.

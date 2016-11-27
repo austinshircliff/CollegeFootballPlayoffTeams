@@ -1,27 +1,26 @@
-package com.wesleyreisz.collegefootballplayoffteams;
+package com.wesleyreisz.collegefootballplayoffteams.fragment;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
-
-import java.util.List;
+import com.wesleyreisz.collegefootballplayoffteams.Constants;
+import com.wesleyreisz.collegefootballplayoffteams.MainActivity;
+import com.wesleyreisz.collegefootballplayoffteams.R;
+import com.wesleyreisz.collegefootballplayoffteams.model.Team;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -55,7 +54,37 @@ public class ShowTeamsListFragment extends Fragment {
         };
         teamsListView.setAdapter(teamsListAdapter);
 
+        teamsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.updateFragment(new ShowTeamFragment());
+            }
+        });
+
+        registerForContextMenu(teamsListView);
+
         return view;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.add(0, v.getId(), 0, "Edit");
+        menu.add(0, v.getId(), 0, "Delete");
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (item.getTitle() == "Edit") {
+            mainActivity.updateFragment(new EditTeamFragment());
+        } else if (item.getTitle() == "Delete") {
+            mainActivity.updateFragment(new RemoveTeamFragment());
+        } else {
+            return false;
+        }
+        return true;
     }
 
 }

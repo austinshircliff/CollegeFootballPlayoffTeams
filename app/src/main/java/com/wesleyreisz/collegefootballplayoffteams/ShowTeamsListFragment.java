@@ -26,14 +26,14 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class ShowTeamsListFragment extends Fragment {
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference mTeamsReference = mRootRef.child("teams");
 
     ListView teamsListView;
     ListAdapter teamsListAdapter;
 
-    public MainActivityFragment() {
+    public ShowTeamsListFragment() {
     }
 
     @Override

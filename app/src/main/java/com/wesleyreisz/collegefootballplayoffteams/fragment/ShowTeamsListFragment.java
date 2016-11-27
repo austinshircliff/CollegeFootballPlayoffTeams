@@ -20,12 +20,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.wesleyreisz.collegefootballplayoffteams.Constants;
 import com.wesleyreisz.collegefootballplayoffteams.MainActivity;
 import com.wesleyreisz.collegefootballplayoffteams.R;
+import com.wesleyreisz.collegefootballplayoffteams.behaviors.ShowFab;
 import com.wesleyreisz.collegefootballplayoffteams.model.Team;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ShowTeamsListFragment extends Fragment {
+public class ShowTeamsListFragment extends Fragment implements ShowFab{
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference mTeamsReference = mRootRef.child("teams");
 

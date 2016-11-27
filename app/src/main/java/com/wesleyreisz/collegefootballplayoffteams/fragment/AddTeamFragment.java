@@ -13,7 +13,7 @@ import com.wesleyreisz.collegefootballplayoffteams.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddTeamFragment extends Fragment {
+public class AddTeamFragment extends Fragment{
 
 
     public AddTeamFragment() {

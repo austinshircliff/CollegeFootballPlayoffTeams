@@ -1,37 +1,35 @@
 package com.wesleyreisz.collegefootballplayoffteams;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference mTeamsReference = mRootRef.child("teams");
+    DatabaseReference mRef = mRootRef.child("teams");
 
-    ListView teamsListView;
-    ListAdapter teamsListAdapter;
+    ListView mListView;
+    ListAdapter mListAdapter;
+
+    HashMap<Integer,Long> teamMap = new HashMap<>();
 
     public MainActivityFragment() {
     }
@@ -39,21 +37,36 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        teamsListView = (ListView)view.findViewById(R.id.listViewTeams);
-        teamsListAdapter = new FirebaseListAdapter<Team>(getActivity(),Team.class,R.layout.team_layout,mTeamsReference) {
+        View view =  inflater.inflate(R.layout.fragment_main, container, false);
+        teamMap = new HashMap<>();
+
+        mListView = (ListView)view.findViewById(R.id.listViewTeams);
+        mListAdapter = new FirebaseListAdapter<Team>(getActivity(),Team.class,R.layout.team_layout, mRef) {
+
             @Override
             protected void populateView(View v, Team model, int position) {
-                Log.d(Constants.TAG,model.toString());
-                TextView teamName = (TextView)v.findViewById(R.id.teamName);
-                teamName.setText(model.getName());
-                TextView teamMascot = (TextView)v.findViewById(R.id.teamNickName);
-                teamMascot.setText(model.getMascot());
-                TextView teamRecord = (TextView)v.findViewById(R.id.teamRecord);
-                teamRecord.setText("Record: " + model.getWins() + "-" + model.getLoses());
+                TextView teamNameTextView = (TextView)v.findViewById(R.id.teamName);
+                teamNameTextView.setText(model.getName());
+                teamMap.put(position,model.getId());
             }
         };
-        teamsListView.setAdapter(teamsListAdapter);
+        mListView.setAdapter(mListAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+                TeamFragment teamFragment = new TeamFragment();
+                teamFragment.setTeamId(teamMap.get(position));
+                Log.d(Constants.TAG, "teamid: " + teamFragment.getTeamId());
+
+                FragmentManager fm = getFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                ft.replace(R.id.fragmentContainer,teamFragment);
+                ft.commit();
+
+            }
+        });
 
         return view;
     }

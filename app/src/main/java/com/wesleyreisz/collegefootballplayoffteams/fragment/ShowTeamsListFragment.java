@@ -23,12 +23,17 @@ import com.wesleyreisz.collegefootballplayoffteams.R;
 import com.wesleyreisz.collegefootballplayoffteams.behaviors.ShowFab;
 import com.wesleyreisz.collegefootballplayoffteams.model.Team;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ShowTeamsListFragment extends Fragment implements ShowFab{
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
     DatabaseReference mTeamsReference = mRootRef.child("teams");
+
+    List<Long>listofIds = new ArrayList<Long>();
 
     ListView teamsListView;
     ListAdapter teamsListAdapter;
@@ -51,6 +56,8 @@ public class ShowTeamsListFragment extends Fragment implements ShowFab{
                 teamMascot.setText(model.getMascot());
                 TextView teamRecord = (TextView)v.findViewById(R.id.teamRecord);
                 teamRecord.setText("Record: " + model.getWins() + "-" + model.getLoses());
+
+                listofIds.add(position,model.getId());
             }
         };
         teamsListView.setAdapter(teamsListAdapter);
@@ -59,6 +66,7 @@ public class ShowTeamsListFragment extends Fragment implements ShowFab{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MainActivity mainActivity = (MainActivity) getActivity();
+
                 mainActivity.updateFragment(new ShowTeamFragment());
             }
         });
@@ -69,7 +77,8 @@ public class ShowTeamsListFragment extends Fragment implements ShowFab{
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
+    public void onCreateContextMenu(ContextMenu menu,
+                                    View v,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, v.getId(), 0, "Edit");
@@ -77,11 +86,20 @@ public class ShowTeamsListFragment extends Fragment implements ShowFab{
     }
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int listPosition = info.position;
+        Log.d(Constants.TAG, "id (position): " + listofIds.get(listPosition) +"(" + listPosition +")");
+
         MainActivity mainActivity = (MainActivity) getActivity();
         if (item.getTitle() == "Edit") {
-            mainActivity.updateFragment(new EditTeamFragment());
+            EditTeamFragment fragment = new EditTeamFragment();
+            fragment.setTeamid2Edit(listofIds.get(listPosition));
+            mainActivity.updateFragment(fragment);
         } else if (item.getTitle() == "Delete") {
-            mainActivity.updateFragment(new RemoveTeamFragment());
+            RemoveTeamFragment fragment = new RemoveTeamFragment();
+            fragment.setTeamid2Edit(listofIds.get(listPosition));
+            mainActivity.updateFragment(fragment);
         } else {
             return false;
         }

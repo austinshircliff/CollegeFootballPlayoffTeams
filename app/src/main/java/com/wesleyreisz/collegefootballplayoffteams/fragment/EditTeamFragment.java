@@ -13,7 +13,15 @@ import com.wesleyreisz.collegefootballplayoffteams.R;
  * A simple {@link Fragment} subclass.
  */
 public class EditTeamFragment extends Fragment {
+    private long teamid2Edit;
 
+    public long getTeamid2Edit() {
+        return teamid2Edit;
+    }
+
+    public void setTeamid2Edit(long teamid2Edit) {
+        this.teamid2Edit = teamid2Edit;
+    }
 
     public EditTeamFragment() {
         // Required empty public constructor

@@ -13,11 +13,11 @@ public class Team {
 
     public Team(){}
 
-    public Team(long id, long loses, String mascot, String name, String picture, long wins) {
-        this.id = id;
+    public Team(long teamId, long loses, String mascotName, String teamName, String picture, long wins) {
+        this.id = teamId;
         this.loses = loses;
-        this.mascot = mascot;
-        this.name = name;
+        this.mascot = mascotName;
+        this.name = teamName;
         this.picture = picture;
         this.wins = wins;
     }

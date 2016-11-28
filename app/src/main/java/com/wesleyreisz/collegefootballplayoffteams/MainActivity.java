@@ -3,8 +3,12 @@ package com.wesleyreisz.collegefootballplayoffteams;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,10 +34,19 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                loadFragment(new AddTeamFragment());
             }
         });
+
+        loadFragment(new ListTeamsFragment());
+    }
+
+    private void loadFragment(Fragment fragment) {
+        Log.d(Constants.TAG, "Loading fragment: " + fragment);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragmentMainContainer, fragment);
+        ft.commit();
     }
 
     @Override
@@ -53,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if (id == R.id.action_home){
+            loadFragment(new ListTeamsFragment());
         }
 
         return super.onOptionsItemSelected(item);

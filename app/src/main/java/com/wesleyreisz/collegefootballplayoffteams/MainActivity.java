@@ -1,5 +1,6 @@
 package com.wesleyreisz.collegefootballplayoffteams;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
+    private boolean isSignedIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        checkAuth(getIntent());
 
         //the fab
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -41,13 +48,6 @@ public class MainActivity extends AppCompatActivity {
         loadFragment(new ListTeamsFragment());
     }
 
-    private void loadFragment(Fragment fragment) {
-        Log.d(Constants.TAG, "Loading fragment: " + fragment);
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.fragmentMainContainer, fragment);
-        ft.commit();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,5 +71,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkAuth(Intent reqIntent) {
+        isSignedIn = reqIntent.getBooleanExtra(Constants.AUTH_VAL,false);
+        if(!isSignedIn){
+            Intent intent = new Intent(this,SignInActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    private void loadFragment(Fragment fragment) {
+        Log.d(Constants.TAG, "Loading fragment: " + fragment);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragmentMainContainer, fragment);
+        ft.commit();
     }
 }

@@ -45,8 +45,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        mStatusTextView = (TextView)findViewById(R.id.txtMessage);
-
         // Set the dimensions of the sign-in button.
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
         mSignInButton.setSize(SignInButton.SIZE_STANDARD);

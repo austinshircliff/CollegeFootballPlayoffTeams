@@ -13,28 +13,66 @@
     tools:context="com.wesleyreisz.collegefootballplayoffteams.SignInActivity"
     tools:showIn="@layout/activity_sign_in">
 
-    <com.google.android.gms.common.SignInButton
-        android:padding="30dp"
-        android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+
+    <LinearLayout
+        android:id="@+id/linearLayoutGroup"
+        android:orientation="vertical"
+
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/textUserName"
+            android:hint="Username"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/textPassword"
+            android:hint="password"
+            android:textSize="20sp"
+            android:inputType="textPassword"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnSignIn"
+            android:text="Login"
+            android:layout_marginTop="20dp"
+            android:padding="20dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/txtTitle"
-        android:layout_above="@id/sign_in_button"
+        android:layout_above="@id/linearLayoutGroup"
         android:textSize="30sp"
-        android:text="Sign In to Google"
+        android:paddingBottom="30dp"
+        android:text="Sign In"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <com.google.android.gms.common.SignInButton
+        android:padding="30dp"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linearLayoutGroup"
+        />
+
     <TextView
-        android:id="@+id/txtMessage"
+        android:id="@+id/txtCreateAccount"
         android:layout_below="@id/sign_in_button"
-        android:textSize="20sp"
+        android:textSize="15sp"
+        android:paddingBottom="30dp"
+        android:text="Create New Account"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -49,6 +49,15 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
         mSignInButton.setSize(SignInButton.SIZE_STANDARD);
         mSignInButton.setOnClickListener(this);
+
+        TextView txtCreateAccount = (TextView)findViewById(R.id.txtCreateAccount);
+        txtCreateAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignInActivity.this, CreateAccountActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

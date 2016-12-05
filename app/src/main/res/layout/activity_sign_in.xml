@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <EditText
-            android:id="@+id/textUserName"
+            android:id="@+id/textEmail"
             android:hint="Username"
             android:textSize="20sp"
             android:gravity="center_horizontal"
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Button
-            android:id="@+id/btnSignIn"
+            android:id="@+id/simple_sign_in_button"
             android:text="Login"
             android:layout_marginTop="20dp"
             android:padding="20dp"
@@ -58,23 +58,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.google.android.gms.common.SignInButton
-        android:padding="30dp"
-        android:layout_marginBottom="30dp"
-        android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayoutGroup"
-        />
-
     <TextView
         android:id="@+id/txtCreateAccount"
-        android:layout_below="@id/sign_in_button"
+        android:layout_below="@id/linearLayoutGroup"
         android:textSize="15sp"
         android:paddingBottom="30dp"
         android:text="Create New Account"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="2" />
 
 </RelativeLayout>

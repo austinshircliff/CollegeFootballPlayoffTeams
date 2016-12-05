@@ -2,54 +2,50 @@ package com.wesleyreisz.collegefootballplayoffteams;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
+    /*
+    Steps for setting up auth:
+     1.) Add Firebase Auth to gradle
+     2.) Get an instance and create a listener
+     3.) Validate input and call signInWithEmailAndPassword
+     4.) Add Listeners for either sucess/failure or complete.
+     5.) Start and stop listener when the activity is created and torn down
+     */
 
-    private static final int RC_SIGN_IN = 1234;
-    GoogleApiClient mGoogleApiClient;
-    TextView mStatusTextView;
-    SignInButton mSignInButton;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth mAuth;
+
+    EditText mTextEmail;
+    EditText mTextPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso =
-                new GoogleSignInOptions
-                    .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
+        //get auth instance
+        mAuth = FirebaseAuth.getInstance();
 
-        // Build a GoogleApiClient with access to the Google Sign-In API and the
-        // options specified by gso.
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        //create auth listener
+        createAuthListener();
 
-        // Set the dimensions of the sign-in button.
-        mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        mSignInButton.setSize(SignInButton.SIZE_STANDARD);
-        mSignInButton.setOnClickListener(this);
-
+        //create account link
         TextView txtCreateAccount = (TextView)findViewById(R.id.txtCreateAccount);
         txtCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,65 +54,106 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 startActivity(intent);
             }
         });
+
+        //validation listener
+        mTextEmail = (EditText)findViewById(R.id.textEmail);
+        mTextEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (mTextEmail.length()<=0)
+                    mTextEmail.setError("Email is Required");
+                if (!mTextEmail.getText().toString().contains("@"))
+                    mTextEmail.setError("Valid Email is Required");
+            }
+        });
+
+        //validation listener
+        mTextPassword = (EditText)findViewById(R.id.textPassword);
+        mTextPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (mTextPassword.length()<=6)
+                    mTextPassword.setError("Password must be at least 6 characters");
+            }
+        });
+
+        //signin button
+        Button btnSignin = (Button)findViewById(R.id.simple_sign_in_button);
+        btnSignin.setOnClickListener(this);
     }
 
+    //setup an authlistener for login/logout events for firebase
+    private void createAuthListener() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(Constants.TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    Intent intent = new Intent(SignInActivity.this,MainActivity.class);
+                    intent.putExtra(Constants.AUTH_VAL,user.getEmail());
+                    startActivity(intent);
+                } else {
+                    // User is signed out
+                    Log.d(Constants.TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+
+        };
+    }
+
+    //actual method that signs into firebase
+    private void signInUidPass(){
+        final ProgressBar pb = (ProgressBar)findViewById(R.id.progress_bar);
+        pb.setVisibility(View.VISIBLE);
+        mAuth.signInWithEmailAndPassword(mTextEmail.getText().toString(), mTextPassword.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(Constants.TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            pb.setVisibility(View.INVISIBLE);
+                            Log.w(Constants.TAG, "signInWithEmail:failed", task.getException());
+                            Toast.makeText(SignInActivity.this,"Authentication Failed",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+    }
+
+    //handle some events
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
+            case R.id.simple_sign_in_button:
+                signInUidPass();
                 break;
         }
 
     }
 
+    //these just start and stop the listener... they could be done any number of ways
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast toast = Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT);
-        toast.show();
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(Constants.TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            mStatusTextView.setText(acct.getDisplayName().toString());
-            mSignInButton.setVisibility(View.INVISIBLE);
-            redirectToList();
-        } else {
-            // Signed out, show unauthenticated UI.
-            mStatusTextView.setText("Unable to Login");
-        }
-    }
-
-    private void redirectToList() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SignInActivity.this,MainActivity.class);
-                intent.putExtra(Constants.AUTH_VAL, true);
-                startActivity(intent);
-            }
-        }, 2000);
-
-    }
-
 
 }
